@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>AR RESUME BUILDER & ANALYZER</title>
+
+<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Orbitron', sans-serif;
+    background:black;
+    color:#ff2c2c;
+    overflow:hidden;
+}
+
+a-plane { box-shadow: 0 0 20px #ff0000aa; }
+a-text { font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px #ff2c2c; }
+
+#resumeOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 700px;
+    padding: 30px;
+    background: rgba(0,0,0,0.95);
+    border: 2px solid #ff0000;
+    border-radius: 15px;
+    box-shadow: 0 0 50px #ff0000aa;
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 10;
+}
+
+#resumeOverlay.show { opacity: 1; }
+
+#resumeOverlay h2 { text-align: center; margin-bottom: 20px; text-shadow:0 0 20px #ff2c2c; }
+
+#resumeOverlay pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: 'Orbitron', monospace;
+    color:#ff2c2c;
+    font-size: 14px;
+}
+
+@media (max-width: 992px){
+    #resumeOverlay { width: 90%; padding: 20px; }
+}
+</style>
+</head>
+
+<body>
+
+<a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
+  <a-marker preset="hiro" smooth="true">
+
+      <!-- Outer Glow Card -->
+      <a-plane position="0 1.2 0" width="6" height="4" color="#ff0000" material="opacity: 0.15"></a-plane>
+
+      <!-- Main Resume Card -->
+      <a-plane position="0 1.2 0.02" width="5.7" height="3.7" color="#000000" material="opacity: 0.95"></a-plane>
+
+      <!-- Title -->
+      <a-text value="⚡ AR RESUME ⚡" position="0 2.9 0.03" align="center" color="#ff2c2c" width="5"></a-text>
+
+  </a-marker>
+  <a-entity camera></a-entity>
+</a-scene>
+
+<!-- Overlay -->
+<div id="resumeOverlay">
+    <h2>⚡ Your AR Resume ⚡</h2>
+    <pre id="resumeText">Loading Resume...</pre>
+</div>
+
+<script>
+// Format Resume
+function formatResume(data) {
+    return `
+NAME: ${data.name || "N/A"}
+
+EMAIL: ${data.email || "N/A"}
+PHONE: ${data.phone || "N/A"}
+
+SKILLS:
+${data.skills || "N/A"}
+
+PROJECTS:
+${data.projects || "N/A"}
+
+EXPERIENCE:
+${data.experience || "N/A"}
+
+ACHIEVEMENTS:
+${data.achievements || "N/A"}
+
+CERTIFICATIONS:
+${data.certifications || "N/A"}
+
+EDUCATION:
+${data.education || "N/A"}
+
+LINKEDIN:
+${data.linkedin || "N/A"}
+
+GITHUB:
+${data.github || "N/A"}
+
+SUMMARY:
+${data.summary || "N/A"}
+`;
+}
+
+// Load Resume
+let resumeData = localStorage.getItem("resumeData");
+if (resumeData) resumeData = JSON.parse(resumeData);
+
+const overlay = document.getElementById("resumeOverlay");
+const resumeText = document.getElementById("resumeText");
+
+const marker = document.querySelector("a-marker");
+
+marker.addEventListener("markerFound", () => {
+    if (resumeData) resumeText.textContent = formatResume(resumeData);
+    else resumeText.textContent = "⚠ Resume Not Found\n\nPlease Generate Resume First.";
+    overlay.classList.add("show");
+});
+
+marker.addEventListener("markerLost", () => {
+    overlay.classList.remove("show");
+});
+</script>
+
+</body>
+</html>

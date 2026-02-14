@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AR Resume Builder & Analyzer - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body{
+            margin:0;
+            background:black;
+            font-family:'Orbitron', sans-serif;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            color:#ff2c2c;
+        }
+
+        .login-box{
+            width:350px;
+            padding:40px;
+            background:rgba(0,0,0,0.95);
+            border:1px solid red;
+            box-shadow:0 0 30px red;
+        }
+
+        input{
+            width:100%;
+            padding:10px;
+            margin-bottom:15px;
+            background:black;
+            border:1px solid red;
+            color:white;
+        }
+
+        button{
+            width:100%;
+            padding:10px;
+            background:red;
+            border:none;
+            font-weight:bold;
+            cursor:pointer;
+            margin-bottom:10px;
+        }
+
+        .error{
+            color:#ff4444;
+            margin-bottom:10px;
+            display:none;
+            text-align:center;
+        }
+
+        .success{
+            color:#00ff88;
+            margin-bottom:10px;
+            display:none;
+            text-align:center;
+        }
+
+        .small-link{
+            text-align:center;
+            cursor:pointer;
+            color:#ff2c2c;
+            font-size:14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-box">
+    <h2 style="text-align:center;">AR RESUME LOGIN</h2>
+
+    <div class="error" id="errorMsg"></div>
+    <div class="success" id="successMsg"></div>
+
+    <input type="email" id="email" placeholder="Enter Email">
+    <input type="password" id="password" placeholder="Enter Password">
+
+    <button onclick="loginUser()">LOGIN</button>
+
+    <div class="small-link" onclick="clearFields()" style="margin-top:12px;">Clear</div>
+</div>
+
+<script>
+
+// Clear any old session on page load and show login page
+localStorage.removeItem("loggedIn");
+
+// If page opened from filesystem, inform user to use server URL
+if (location.protocol === 'file:') {
+    const err = 'This page should be opened via http://localhost:3000 (start the server then open that URL).';
+    document.getElementById('errorMsg').textContent = err;
+    document.getElementById('errorMsg').style.display = 'block';
+}
+
+function showError(msg){
+    const error = document.getElementById("errorMsg");
+    error.textContent = msg;
+    error.style.display = "block";
+    document.getElementById("successMsg").style.display = "none";
+}
+
+function showSuccess(msg){
+    const success = document.getElementById("successMsg");
+    success.textContent = msg;
+    success.style.display = "block";
+    document.getElementById("errorMsg").style.display = "none";
+}
+
+function clearFields(){
+    document.getElementById("email").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("errorMsg").style.display = "none";
+    document.getElementById("successMsg").style.display = "none";
+}
+
+// ================= LOGIN =================
+function loginUser(){
+
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!email || !password) {
+        showError("Please fill all fields");
+        return;
+    }
+
+    fetch("/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({email, password})
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        if(data.success){
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userEmail", email);
+            localStorage.setItem("loggedIn", "true");
+            // Redirect to index.html after successful login
+            setTimeout(() => {
+                window.location.href="index.html";
+            }, 500);
+        }else{
+            showError(data.message || "Invalid Credentials");
+        }
+
+    })
+    .catch((err) => {
+        console.error('Login fetch error:', err);
+        showError("Cannot reach server. Start the server and open http://localhost:3000");
+    });
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AR RESUME BUILDER & ANALYZER</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Orbitron', sans-serif;
+    background:black;
+    overflow:hidden;
+    color:#ff2c2c;
+}
+
+/* 🔥 Curtain Images */
+.side-image{
+    position:fixed;
+    top:0;
+    width:50%;
+    height:100vh;
+    background-size:cover;
+    background-repeat:no-repeat;
+    background-position:center;
+    z-index:5;
+}
+
+.left-image{
+    left:0;
+    background-image:url('left.jpeg');
+    animation: openLeft 2s forwards;
+}
+
+.right-image{
+    right:0;
+    background-image:url('right.jpeg');
+    animation: openRight 2s forwards;
+}
+
+@keyframes openLeft{
+    0% { width:50%; }
+    100% { width:25%; }
+}
+
+@keyframes openRight{
+    0% { width:50%; }
+    100% { width:25%; }
+}
+
+/* 🔥 Resume Console */
+.console{
+    width:50%;
+    margin:50px 25%;
+    padding:30px;
+    border:1px solid #ff0000;
+    background:rgba(0,0,0,0.95);
+    box-shadow:0 0 40px #ff0000aa;
+    border-radius:10px;
+    opacity:0;
+    transition:opacity 1s ease;
+}
+
+.console.show{
+    opacity:1;
+}
+
+.console:hover{
+    box-shadow: 0 0 15px #ff0000, 
+                0 0 30px #ff0000aa,
+                0 -5px 15px #ff0000,
+                0 5px 15px #ff0000,
+                -5px 0 15px #ff0000,
+                5px 0 15px #ff0000,
+                inset 0 0 20px rgba(255,0,0,0.3),
+                -10px -10px 25px #ff0000,
+                10px -10px 25px #ff0000,
+                -10px 10px 25px #ff0000,
+                10px 10px 25px #ff0000;
+    border-color: #e40d0d;
+    transition: all 0.3s ease;
+}
+
+.section-label{
+    color:#ff2c2c;
+    font-weight:bold;
+    letter-spacing:2px;
+    text-shadow:0 0 10px #ff0000;
+    display:block;
+    margin-bottom:5px;
+}
+
+input, textarea {
+    background: black !important;
+    border: 1px solid #ff0000 !important;
+    color: #faf1f1 !important;
+    font-weight: bold;
+    caret-color: #ff0000;
+    padding: 8px;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: hsl(200, 7%, 25%) !important;
+    opacity: 1;
+    font-weight: bold;
+}
+
+.btn-hud{
+    background:#ff0000;
+    color:black;
+    font-weight:bold;
+    border:none;
+}
+
+.btn-analyzer{
+    background:#ff9900;
+    color:black;
+    font-weight:bold;
+    border:none;
+}
+
+.title{
+    text-align:center;
+    font-size:24px;
+    margin-bottom:25px;
+    text-shadow:0 0 20px #ff0000;
+}
+
+/* Mobile */
+@media (max-width: 992px){
+    .side-image{
+        display:none;
+    }
+    .console{
+        width:90%;
+        margin:30px auto;
+        opacity:1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔐 Login Protection -->
+<script>
+(function(){
+  const token = localStorage.getItem('token');
+  const loggedIn = localStorage.getItem('loggedIn');
+  if (!token || loggedIn !== 'true') { 
+    window.location.href = 'login.html'; 
+    return; 
+  }
+})();
+</script>
+
+<!-- Curtain Images -->
+<div class="side-image left-image"></div>
+<div class="side-image right-image"></div>
+
+<!-- Resume Console -->
+<div class="console" id="resumeConsole">
+
+<div class="title">⚡ AR RESUME BUILDER & ANALYZER ⚡</div>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<label class="section-label">FULL NAME</label>
+<input id="name" class="form-control mb-3" placeholder="Enter your full name">
+
+<label class="section-label">EMAIL</label>
+<input id="email" class="form-control mb-3" placeholder="Enter your email">
+
+<label class="section-label">PHONE</label>
+<input id="phone" class="form-control mb-3" placeholder="Enter your phone number">
+
+<label class="section-label">SKILLS</label>
+<textarea id="skills" class="form-control mb-3" rows="2" placeholder="Enter your skills, e.g., JavaScript, Python"></textarea>
+
+<label class="section-label">PROJECTS</label>
+<textarea id="projects" class="form-control mb-3" rows="2" placeholder="Enter your project details"></textarea>
+
+<label class="section-label">EXPERIENCE</label>
+<textarea id="experience" class="form-control mb-3" rows="2" placeholder="Enter your work experience"></textarea>
+
+</div>
+
+<div class="col-md-6">
+
+<label class="section-label">ACHIEVEMENTS</label>
+<textarea id="achievements" class="form-control mb-3" rows="2" placeholder="Enter your achievements"></textarea>
+
+<label class="section-label">CERTIFICATIONS</label>
+<textarea id="certifications" class="form-control mb-3" rows="2" placeholder="Enter your certifications"></textarea>
+
+<label class="section-label">EDUCATION</label>
+<textarea id="education" class="form-control mb-3" rows="2" placeholder="Enter your education details"></textarea>
+
+<label class="section-label">LINKEDIN</label>
+<input id="linkedin" class="form-control mb-3" placeholder="Enter your LinkedIn profile URL">
+
+<label class="section-label">GITHUB</label>
+<input id="github" class="form-control mb-3" placeholder="Enter your GitHub profile URL">
+
+<label class="section-label">PROFESSIONAL SUMMARY</label>
+<textarea id="summary" class="form-control mb-3" rows="3" placeholder="Enter a short professional summary"></textarea>
+
+</div>
+</div>
+
+<!-- Buttons -->
+<button class="btn btn-hud w-100 mt-3 mb-2" onclick="saveResume()">Generate Resume 🚀</button>
+<a href="ar.html" class="btn btn-outline-danger w-100 mb-2">AR Experience 🤖</a>
+<a href="analyzer.html" class="btn btn-analyzer w-100 mb-2">Analyze Resume 📊</a>
+
+<!-- Success message -->
+<div id="saveMessage" style="text-align:center; color:#00ff00; font-weight:bold; margin-top:10px;"></div>
+
+</div>
+
+<script>
+/* Show resume console after curtain animation */
+setTimeout(() => {
+    document.getElementById("resumeConsole").classList.add("show");
+    document.body.style.overflow = "auto";
+}, 2000);
+</script>
+
+<script>
+// Save Resume Function
+function saveResume() {
+
+    const getValue = (id) => {
+        const element = document.getElementById(id);
+        return element ? element.value.trim() : "";
+    };
+
+    const data = {
+        name: getValue("name"),
+        email: getValue("email"),
+        phone: getValue("phone"),
+        linkedin: getValue("linkedin"),
+        github: getValue("github"),
+        summary: getValue("summary"),
+        skills: getValue("skills"),
+        projects: getValue("projects"),
+        experience: getValue("experience"),
+        achievements: getValue("achievements"),
+        certifications: getValue("certifications"),
+        education: getValue("education")
+    };
+
+    // Validation
+    if (!data.name) { alert("⚠ Please enter your Full Name."); return; }
+    if (!data.email) { alert("⚠ Please enter your Email."); return; }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(data.email)) { alert("⚠ Please enter a valid Email address."); return; }
+
+    const token = localStorage.getItem('token');
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    fetch("/saveResume", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (res.status === 401) {
+            alert('Session expired. Please login again.');
+            window.location.href = 'login.html';
+            throw new Error('Unauthorized');
+        }
+        if (!res.ok) throw new Error("Server error");
+        return res.json();
+    })
+    .then(response => {
+        // ✅ Show success message instead of alert
+        const msg = document.getElementById("saveMessage");
+        msg.textContent = "✅ Resume Successfully Saved!";
+        setTimeout(() => { msg.textContent = ""; }, 3000);
+
+        // Store in localStorage for AR & Analyzer
+        localStorage.setItem("resumeData", JSON.stringify(data));
+    })
+    .catch(error => {
+        console.error("Error saving resume:", error);
+        const msg = document.getElementById("saveMessage");
+        msg.textContent = "❌ Failed to save resume. Make sure server is running.";
+        setTimeout(() => { msg.textContent = ""; }, 5000);
+    });
+}
+
+// Logout
+function logoutUser() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("loggedIn");
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("resumeData");
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>

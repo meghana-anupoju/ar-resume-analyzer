@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Resume Analyzer 📊</title>
+
+<!-- Bootstrap & Fonts -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Orbitron', sans-serif;
+    background: #0a0a0a;
+    color: #ff2c2c;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* Header */
+.header {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    text-align: center;
+    text-shadow: 0 0 10px #ff2c2c, 0 0 20px #ff9900;
+}
+
+/* Score Card */
+.score-card {
+    width: 80%;
+    max-width: 600px;
+    background: rgba(20,20,20,0.95);
+    border: 1px solid #ff2c2c;
+    border-radius: 20px;
+    box-shadow: 0 0 30px #ff2c2c66;
+    padding: 40px 30px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.score-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 50px #ff9900;
+}
+
+/* Score Text */
+.score-text {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #ff2c2c, 0 0 20px #ff9900;
+}
+
+/* Progress Bar */
+.progress {
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #222;
+    box-shadow: inset 0 0 10px #000;
+}
+
+.progress-bar {
+    height: 100%;
+    line-height: 30px;
+    color: black;
+    font-weight: bold;
+    font-size: 18px;
+    transition: width 1s ease-in-out, background 0.5s;
+    background: linear-gradient(90deg, #ff2c2c, #ff9900);
+}
+
+/* Back Button */
+.btn-back {
+    display: block;
+    width: 220px;
+    margin: 40px auto 0 auto;
+    background: #ff2c2c;
+    color: black;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+.btn-back:hover {
+    background: #ff4d4d;
+    color: white;
+    box-shadow: 0 0 15px #ff9900;
+}
+</style>
+</head>
+<body>
+
+<div class="header">⚡ Resume Analyzer ⚡</div>
+
+<div class="score-card">
+    <div class="score-text" id="scoreText">Calculating Score...</div>
+    <div class="progress">
+        <div class="progress-bar" id="scoreBar" style="width: 0%">0%</div>
+    </div>
+</div>
+
+<button class="btn-back" onclick="goBack()">⬅ Back to Resume Builder</button>
+
+<script>
+// Go back function
+function goBack() {
+    window.location.href = "index.html";
+}
+
+// Load resume data
+const resumeData = JSON.parse(localStorage.getItem("resumeData") || "{}");
+
+// ---------------- Calculate Score ----------------
+// Define weights for each section
+const weights = {
+    skills: 0.3,        // 30%
+    projects: 0.25,     // 25%
+    experience: 0.2,    // 20%
+    achievements: 0.15, // 15%
+    certifications: 0.1 // 10%
+};
+
+// Helper: split comma/semicolon/newline separated text
+function parseList(str) {
+    if(!str) return [];
+    return str.split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);
+}
+
+// Compute score for each section (0-100 scale)
+function sectionScore(list, maxCount=5) {
+    const len = list.length;
+    return Math.min(len / maxCount, 1); // Cap at 1
+}
+
+// Calculate overall score
+const skillsScore = sectionScore(parseList(resumeData.skills));
+const projectsScore = sectionScore(parseList(resumeData.projects));
+const experienceScore = sectionScore(resumeData.experience ? resumeData.experience.split(/\n/) : []);
+const achievementsScore = sectionScore(parseList(resumeData.achievements));
+const certificationsScore = sectionScore(parseList(resumeData.certifications));
+
+const overallScore = Math.round(
+    (skillsScore*weights.skills + 
+    projectsScore*weights.projects + 
+    experienceScore*weights.experience + 
+    achievementsScore*weights.achievements + 
+    certificationsScore*weights.certifications) * 100
+);
+
+// Animate progress bar
+const scoreBar = document.getElementById("scoreBar");
+const scoreText = document.getElementById("scoreText");
+let progress = 0;
+const interval = setInterval(()=>{
+    if(progress >= overallScore) {
+        clearInterval(interval);
+    } else {
+        progress++;
+        scoreBar.style.width = progress + "%";
+        scoreBar.textContent = progress + "%";
+    }
+}, 15);
+
+// Set final text
+scoreText.textContent = `Resume Score: ${overallScore}%`;
+scoreBar.style.width = overallScore + "%";
+scoreBar.textContent = overallScore + "%";
+</script>
+
+</body>
+</html>
